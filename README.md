@@ -1,6 +1,6 @@
 # Postgresql 15逻辑复制实验工程
 
-逻辑复制是基于表级别的选择性复制，例如可以复制主库的一部分表到备库，这是一种粒度更细的复制，逻辑复制主要使用场景为：
+pg10开始增加了逻辑复制功能，是基于表级别的选择性复制，例如可以复制主库的一部分表到备库，这是一种粒度更细的复制，逻辑复制主要使用场景为：
 * 根据业务需求，将一个数据库中的一部分表同步到另一个数据库
 * 满足报表库取数需求，从多个数据库采集报表数据
 * 实现 PostgreSQL 跨大版本数据同步
@@ -13,7 +13,7 @@ docker-compose up -d
 ```
 实验发布节点为node1, 订阅节点为node2
 
-2. 修改 data/node1 和 data/node2下的 postgresql.conf，增加以下两行，这是逻辑复制的关键，需要WAL日志更细粒度
+2. 修改 data/node1 和 data/node2下的 postgresql.conf，增加以下两行，这是逻辑复制的关键，需要更细粒度的WAL日志
 ```
 docker-compose down
 
@@ -34,7 +34,7 @@ max_replication_slots = 10
 docker-compose up -d 
 ```
 
-# 创建发布和订阅通道
+# 创建复制的发布和订阅通道
 ## On Node1
 创建复制的发布通道（类似消息中间件的Topic）
 ```
@@ -55,7 +55,7 @@ WITH (copy_data = true, create_slot=false, slot_name=backup_slot);
 ```
 注意host要填slave能访问的网络地址，这里用的是service name（docker-compose规范）
 
-# 创建发布和订阅通道
+# 发布节点（主库）设置具体要复制的表，订阅节点（从库）启动复制
 ## On Node1
 ```
 CREATE TABLE test (id INT PRIMARY KEY);
@@ -70,7 +70,7 @@ CREATE TABLE test (id INT PRIMARY KEY);
 ALTER SUBSCRIPTION backup_sub REFRESH PUBLICATION;
 ```
 
-# Testing
+# 测试表增删数据，验证复制成功
 ## On Node1
 ```
 insert into test values (1);
