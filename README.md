@@ -83,3 +83,7 @@ postgres=# select * from test;
   3
 (1 row)
 ```
+
+See also:
+1. https://www.cnblogs.com/jl1771/p/17855927.html
+2. https://www.modb.pro/db/428793
