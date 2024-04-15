@@ -39,7 +39,9 @@ docker-compose up -d
 创建复制的发布通道（类似消息中间件的Topic）
 ```
 docker exec -it postgres-node1 psql -U postgres  
-
+```
+在Node1上执行以下SQL：
+```
 CREATE PUBLICATION backup_pub;
 
 select pg_create_logical_replication_slot('backup_slot', 'pgoutput');
@@ -48,7 +50,9 @@ select pg_create_logical_replication_slot('backup_slot', 'pgoutput');
 ## On Node2
 ```
 docker exec -it postgres-node2 psql -U postgres
-
+```
+在Node2上执行以下SQL：
+```
 CREATE SUBSCRIPTION backup_sub CONNECTION 'host=postgres_master port=5432 user=postgres password=password1 dbname=postgres'
 PUBLICATION backup_pub
 WITH (copy_data = true, create_slot=false, slot_name=backup_slot);
