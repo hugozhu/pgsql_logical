@@ -82,8 +82,12 @@ postgres=# select * from test;
 ----
   3
 (1 row)
+
+select * from pg_stat_replication;
+
 ```
 
 See also:
-1. https://www.cnblogs.com/jl1771/p/17855927.html
-2. https://www.modb.pro/db/428793
+1. https://supabase.com/docs/guides/database/postgres/setup-replication-external
+2. https://www.cnblogs.com/jl1771/p/17855927.html
+3. https://www.modb.pro/db/428793
