@@ -97,7 +97,49 @@ select * from pg_stat_replication;
 
 ```
 
+## 查看同步状态
+```
+SELECT * FROM pg_replication_slots;
+SELECT * FROM pg_stat_subscription;
+SELECT * FROM pg_stat_replication;
+```
+
+复制延迟
+```
+select   pid, client_addr, state, sync_state,  
+         pg_wal_lsn_diff(sent_lsn, write_lsn) as write_lag,  
+         pg_wal_lsn_diff(sent_lsn, flush_lsn) as flush_lag,  
+         pg_wal_lsn_diff(sent_lsn, replay_lsn) as replay_lag
+from pg_stat_replication;
+```
+
+## 变更或取消同步
+```
+alter database postgres
+set timezone to 'Asia/Shanghai';
+
+drop subscription backup_sub;
+
+CREATE SUBSCRIPTION backup_sub
+CONNECTION 'host=postgres_master port=5432 user=postgres password=password dbname=postgres'
+PUBLICATION backup_pub
+WITH (copy_data = true, create_slot=true, slot_name=backup_slot);
+
+-- ALTER SUBSCRIPTION backup_sub enable;
+
+ALTER PUBLICATION backup_pub DROP TABLE test;
+
+ALTER SUBSCRIPTION backup_sub REFRESH PUBLICATION;
+```
+
+## 高级应用
+
+
 See also:
-1. https://supabase.com/docs/guides/database/postgres/setup-replication-external
-2. https://www.cnblogs.com/jl1771/p/17855927.html
-3. https://www.modb.pro/db/428793
+1. http://www.postgres.cn/docs/14/logical-replication.html
+2. https://supabase.com/docs/guides/database/postgres/setup-replication-external
+3. https://www.cnblogs.com/jl1771/p/17855927.html
+4. https://www.modb.pro/db/428793
+5. https://cloud.tencent.com/developer/article/1671149
+6. https://xknow.net/logical-replication-in-postgresql/
+7. https://github.com/eulerto/wal2json
